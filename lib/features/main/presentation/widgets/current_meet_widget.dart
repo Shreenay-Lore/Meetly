@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meetly/core/ui/default_button.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_bloc.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_state.dart';
 import 'package:meetly/features/chat/presentation/page/chat_page.dart';
@@ -196,55 +197,20 @@ class CurrentMeetWidget extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         // Chat button
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.primary,
-                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                        DefaultButton(
+                          height: 42,
+                          width: 90,
+                          onPressed: () {
+                            context.push(ChatPage.route(meetEntity.id));
+                          },
+                          icon: CupertinoIcons.chat_bubble_2_fill,
+                          iconSize: 20,
+                          text:'Chat',
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
                           ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                context.push(ChatPage.route(meetEntity.id));
-                              },
-                              borderRadius: BorderRadius.circular(14),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.chat_bubble_2_fill,
-                                      size: 20,
-                                      color: Theme.of(context).colorScheme.onPrimary,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Chat',
-                                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                            color: Theme.of(context).colorScheme.onPrimary,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          radius: 14,
                         ),
                       ],
                     ),

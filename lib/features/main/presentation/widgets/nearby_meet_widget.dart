@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meetly/core/ui/default_button.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_bloc.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_state.dart';
 import 'package:meetly/features/meet/domain/entity/meet_entity.dart';
@@ -92,7 +93,6 @@ class NearbyMeetWidget extends StatelessWidget {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                      
                         Expanded(
                           child: SizedBox(
                             height: 48,
@@ -159,92 +159,33 @@ class NearbyMeetWidget extends StatelessWidget {
                         const SizedBox(width: 12),
                       
                         if (!isUserAttending)
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Theme.of(context).colorScheme.primary,
-                                  Theme.of(context).colorScheme.primary.withOpacity(0.85),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.35),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                          DefaultButton(
+                            height: 42,
+                            width: 90,
+                            onPressed: () => context.push(MeetPage.route(meetEntity.id)),
+                            icon: Icons.add_rounded,
+                            iconSize: 20,
+                            text: 'Join',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontWeight: FontWeight.bold,
                             ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  // Handle join action
-                                },
-                                borderRadius: BorderRadius.circular(14),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.add_rounded,
-                                        size: 20,
-                                        color: Theme.of(context).colorScheme.surface,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Join',
-                                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                              color: Theme.of(context).colorScheme.surface,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                            radius: 14,
                           )
                         else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
+                        DefaultButton(
+                            height: 42,
+                            width: 100,
+                            onPressed: () {},
+                            icon: Icons.check_circle_rounded,
+                            iconSize: 18,
+                            text: 'Joined',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontWeight: FontWeight.bold,
                             ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.check_circle_rounded,
-                                  size: 18,
-                                  color: Theme.of(context).colorScheme.surface,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Joined',
-                                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                        color: Theme.of(context).colorScheme.surface,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
+                            radius: 14,
+                          )
                       ],
                     ),
                   ],

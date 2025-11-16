@@ -29,9 +29,22 @@ class MeetPage extends StatelessWidget {
         },
         builder: (context, state) {
           if(state.status == MeetStatus.loading){
-            return const Scaffold(
+            return Scaffold(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               body: Center(
-                child: CircularProgressIndicator.adaptive(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator.adaptive(),
+                    SizedBox(height: 16),
+                    Text(
+                      'Loading meet details...',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -59,14 +72,22 @@ class MeetPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Column(
-                    children: [
-                      Spacer(),
-                      MeetBottomButtons(),
-                    ],
-                  )
                 ],
               ),
+            ),
+            bottomNavigationBar: Container(
+              padding: EdgeInsets.fromLTRB(20, 12, 20, 20 + MediaQuery.of(context).padding.bottom),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: MeetBottomButtons(),
             ),
           );
         },

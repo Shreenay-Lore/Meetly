@@ -137,13 +137,7 @@ class ProfilePage extends StatelessWidget {
 
                   const SizedBox(height: 20,),
 
-                  InkWell(
-                    onTap: (){
-                      //For test only
-                      context.push(CreateMeetPage.route);
-                    },
-                    child: Text('Last meets',style: Theme.of(context).textTheme.headlineSmall,)
-                  ),
+                  Text('Last meets',style: Theme.of(context).textTheme.headlineSmall,),
 
                   const SizedBox(height: 10,),
 

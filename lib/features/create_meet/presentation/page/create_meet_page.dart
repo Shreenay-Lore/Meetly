@@ -8,6 +8,7 @@ import 'package:meetly/core/ui/default_text_field.dart';
 import 'package:meetly/features/create_meet/presentation/bloc/create_meet_bloc.dart';
 import 'package:meetly/features/create_meet/presentation/bloc/create_meet_event.dart';
 import 'package:meetly/features/create_meet/presentation/bloc/create_meet_state.dart';
+import 'package:meetly/features/create_meet/presentation/widgets/form_section.dart';
 import 'package:meetly/features/create_meet/presentation/page/location_picker_page.dart';
 import 'package:meetly/features/meet/presentation/page/meet_page.dart';
 
@@ -55,7 +56,7 @@ class _CreateMeetPageState extends State<CreateMeetPage> {
           }
           if (state.status == CreateMeetStatus.success &&
               state.createdMeet != null) {
-            context.push(MeetPage.route(state.createdMeet!.id));
+            context.pushReplacement(MeetPage.route(state.createdMeet!.id));
           }
         },
         builder: (context, state) {
@@ -96,8 +97,7 @@ class _CreateMeetPageState extends State<CreateMeetPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSection(
-                        context,
+                      FormSection(
                         icon: Icons.title_rounded,
                         label: 'Title',
                         child: DefaultTextField(
@@ -106,8 +106,7 @@ class _CreateMeetPageState extends State<CreateMeetPage> {
                         ),
                       ),
                       const SizedBox(height: 28),
-                      _buildSection(
-                        context,
+                      FormSection(
                         icon: Icons.description_outlined,
                         label: 'Description',
                         child: DefaultTextField(
@@ -119,16 +118,14 @@ class _CreateMeetPageState extends State<CreateMeetPage> {
                         ),
                       ),
                       const SizedBox(height: 28),
-                      _buildSection(
-                        context,
+                      FormSection(
                         icon: Icons.schedule_rounded,
                         label: 'Time',
                         subtitle: 'Auto-completes 2 hours after start',
                         child: _buildTimePicker(context),
                       ),
                       const SizedBox(height: 28),
-                      _buildSection(
-                        context,
+                      FormSection(
                         icon: Icons.location_on_outlined,
                         label: 'Location',
                         subtitle: 'Tap map to select location',
@@ -176,46 +173,6 @@ class _CreateMeetPageState extends State<CreateMeetPage> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildSection(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    String? subtitle,
-    required Widget child,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                size: 18,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.3,
-                  ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        child,
-      ],
     );
   }
 
