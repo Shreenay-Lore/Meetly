@@ -23,7 +23,7 @@ class _ChatListWidgetState extends State<ChatListWidget> {
     super.initState();
     context.read<ChatBloc>().add(GetMessagesEvent(meetId: widget.meetId));
     scrollController.addListener((){
-      if(scrollController.position.atEdge && scrollController.position.pixels!=0){
+      if(scrollController.hasClients && scrollController.position.atEdge && scrollController.position.pixels!=0){
         context.read<ChatBloc>().add(GetMessagesEvent(meetId: widget.meetId));
       }
     });
@@ -81,8 +81,10 @@ class _ChatListWidgetState extends State<ChatListWidget> {
       },
       listener: (context, state) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          scrollController.animateTo(scrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+          if (scrollController.hasClients) {
+            scrollController.animateTo(scrollController.position.maxScrollExtent,
+                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+          }
         });
       },
     );

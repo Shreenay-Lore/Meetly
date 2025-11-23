@@ -21,12 +21,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     var result = await chatRepository.joinChat(
         meetId: event.meetingId,
         onNewMessage: (MessageEntity message) {
-          emit(state.copyWith(
-              status: ChatStatus.newMessage,
-              messages: [...(state.messages ?? []),message]));
+          if (!emit.isDone) {
+            emit(state.copyWith(
+                status: ChatStatus.newMessage,
+                messages: [...(state.messages ?? []),message]));
+          }
         },
         onError: (String error) {
-          emit(state.copyWith(status: ChatStatus.error, errorMessage: error));
+          if (!emit.isDone) {
+            emit(state.copyWith(status: ChatStatus.error, errorMessage: error));
+          }
         });
     result.fold((l) {
       emit(state.copyWith(status: ChatStatus.error, errorMessage: l.message));
@@ -37,7 +41,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
-    emit(state.copyWith(status: ChatStatus.loading));
+    if (event.optimisticMessage != null) {
+      emit(state.copyWith(
+          status: ChatStatus.newMessage,
+          messages: [...(state.messages ?? []), event.optimisticMessage!]));
+    }
 
     var result = await chatRepository.sendMessage(event.meetingId, event.text);
     result.fold((l) {

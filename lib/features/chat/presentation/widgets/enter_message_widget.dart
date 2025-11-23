@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meetly/core/ui/default_text_field.dart';
+import 'package:meetly/features/auth/presentation/bloc/user_bloc.dart';
+import 'package:meetly/features/chat/domain/entity/message_entity.dart';
 import 'package:meetly/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:meetly/features/chat/presentation/bloc/chat_event.dart';
 
@@ -39,8 +41,23 @@ class _EnterMessageWidgetState extends State<EnterMessageWidget> {
           IconButton(
             onPressed: () {
               if (controller.text.isEmpty) return;
+              
+              final userState = context.read<UserBloc>().state;
+              final messageText = controller.text;
+              
+              MessageEntity? optimisticMessage;
+              if (userState.userEntity != null) {
+                optimisticMessage = MessageEntity(
+                  text: messageText,
+                  createdAt: DateTime.now(),
+                  sender: userState.userEntity!,
+                );
+              }
+              
               context.read<ChatBloc>().add(SendMessageEvent(
-                  meetingId: widget.meetId, text: controller.text));
+                  meetingId: widget.meetId, 
+                  text: messageText,
+                  optimisticMessage: optimisticMessage));
               controller.clear();
             },
             icon: Icon(CupertinoIcons.arrow_right_circle_fill),

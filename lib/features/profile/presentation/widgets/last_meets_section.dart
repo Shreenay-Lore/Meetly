@@ -16,11 +16,12 @@ class LastMeetsSection extends StatelessWidget {
               return LastMeetWidget(meetEntity: state.lastMeets![index]);
           },
           separatorBuilder:(context,index){
-            return const SizedBox(height: 10,);
+            return const SizedBox(height: 12,);
           },
           itemCount: state.lastMeets?.length ?? 0,
           shrinkWrap: true,
           physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 8),
         );
       },
     );

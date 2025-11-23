@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:meetly/core/get_it/get_it.dart';
-import 'package:meetly/core/ui/default_modal_bottom_sheet.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_bloc.dart';
-import 'package:meetly/features/auth/presentation/bloc/user_event.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_state.dart';
-import 'package:meetly/features/create_meet/presentation/page/create_meet_page.dart';
 import 'package:meetly/features/profile/presentation/bloc/last_meets_bloc.dart';
 import 'package:meetly/features/profile/presentation/bloc/last_meets_event.dart';
-import 'package:meetly/features/profile/presentation/page/edit_profile_page.dart';
 import 'package:meetly/features/profile/presentation/widgets/circle_user_avatar.dart';
 import 'package:meetly/features/profile/presentation/widgets/last_meets_section.dart';
+import 'package:meetly/features/profile/presentation/widgets/profile_options_bottomsheet.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -21,134 +17,134 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-  create: (context) => getIt<LastMeetsBloc>()..add(GetLastMeetsEvent(refresh: true)),
-  child: BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Profile',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
-            ),
-            centerTitle: false,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return DefaultModalBottomSheet(
-                          elements: [
-                            ListTile(
-                              leading: Icon(
-                                Icons.edit,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              title: const Text('Edit profile'),
-                              onTap: () {
-                                context.pop();
-                                context.push(EditProfilePage.route);
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(
-                                Icons.logout,
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                              title: Text(
-                                'Sign out',
-                                style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error),
-                              ),
-                              onTap: () {
-                                context.read<UserBloc>().add(SignOutEvent());
-                              },
-                            ),
-                          ]);
-                      });
-                },
-                icon: Icon(
-                  Icons.more_vert,
-                  color: Theme.of(context).colorScheme.onSurface,
+      create: (_) => getIt<LastMeetsBloc>()..add(GetLastMeetsEvent(refresh: true)),
+      child: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: _buildAppBar(context),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    _buildProfileCard(context, state),
+                    const SizedBox(height: 28),
+                    Text(
+                      'Last meets',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 12),
+                    const Expanded(child: LastMeetsSection()),
+                  ],
                 ),
               ),
-            ],
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleUserAvatar(
-                        height: 100,
-                        width: 100,
-                        url: state.userEntity?.avatar,
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${state.userEntity?.name}',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                          ),
-                          Text(
-                            '${state.userEntity?.email}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(.8)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
-                  const SizedBox(height: 10),
-                  
-                  Text(
-                    state.userEntity?.bio ?? '',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: 14,
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        'Profile',
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+      ),
+      centerTitle: false,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          onPressed: () {
+            ProfileOptionsBottomSheet.show(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileCard(BuildContext context, UserState state) {
+    final user = state.userEntity;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleUserAvatar(
+            height: 90,
+            width: 90,
+            url: user?.avatar,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user?.name ?? '',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  user?.email ?? '',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.8)),
+                            .withOpacity(.7),
+                      ),
+                ),
+                if ((user?.bio ?? '').isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    user!.bio!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                        ),
                   ),
-
-                  const SizedBox(height: 20,),
-
-                  Text('Last meets',style: Theme.of(context).textTheme.headlineSmall,),
-
-                  const SizedBox(height: 10,),
-
-                  const Expanded(child: LastMeetsSection())
-                ],
-              ),
+                ]
+              ],
             ),
           ),
-        );
-      },
-    ),
-);
+        ],
+      ),
+    );
   }
 }

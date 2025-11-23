@@ -78,28 +78,67 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             }
                           }
                         },
-                        child: _avatarFile != null
-                            ? ClipOval(
-                                child: Image.file(
-                                  _avatarFile!,
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : CircleUserAvatar(
-                                width: 100,
-                                height: 100,
-                                url: state.userEntity?.avatar,
-                              )),
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            _avatarFile != null
+                                ? Container(
+                                    width: 110,
+                                    height: 110,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        width: 2,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        )
+                                      ]
+                                    ),
+                                    child: ClipOval(
+                                      child: Image.file(
+                                        _avatarFile!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )
+                                : CircleUserAvatar(
+                                    width: 110,
+                                    height: 110,
+                                    url: state.userEntity?.avatar,
+                                  ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Theme.of(context).colorScheme.primary,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 4,
+                                  )
+                                ]
+                              ),
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                size: 18,
+                              ),
+                            ),
+                          ],
+                        )),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 28,
                   ),
                   Text(
                     'Name',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                   ),
@@ -111,12 +150,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _nameController,
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 24,
                   ),
                   Text(
                     'Bio',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                   ),
@@ -132,7 +171,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   Spacer(),
                   DefaultButton(
-                    text: 'Save',
+                    text: 'Save Changes',
                     onPressed: (){
                       context.read<UserBloc>().add(EditProfileEvent(name: _nameController.text, bio: _bioController.text,avatar: _avatarFile));
                     },

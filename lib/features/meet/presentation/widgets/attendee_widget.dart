@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meetly/core/ui/default_button.dart';
 import 'package:meetly/features/auth/domain/entity/user_entity.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_bloc.dart';
 import 'package:meetly/features/auth/presentation/bloc/user_state.dart';
@@ -224,10 +225,16 @@ class AttendeeWidget extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(24, 12, 24, 20),
                 child: Row(
                   children: [
-                    CircleUserAvatar(
-                      width: 56,
-                      height: 56,
-                      url: attendee.avatar,
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(bottomSheetContext);
+                        _showProfileDialog(context, attendee);
+                      },
+                      child: CircleUserAvatar(
+                        width: 56,
+                        height: 56,
+                        url: attendee.avatar,
+                      ),
                     ),
                     SizedBox(width: 16),
                     Expanded(
@@ -257,19 +264,6 @@ class AttendeeWidget extends StatelessWidget {
               ),
               
               Divider(height: 1),
-              
-              // Menu options
-              _buildMenuOption(
-                context: context,
-                icon: CupertinoIcons.person_circle,
-                title: 'View Profile',
-                subtitle: 'See full profile picture',
-                iconColor: Theme.of(context).colorScheme.primary,
-                onTap: () {
-                  Navigator.pop(bottomSheetContext);
-                  _showProfileDialog(context, attendee);
-                },
-              ),
               
               _buildMenuOption(
                 context: context,
@@ -377,70 +371,22 @@ class AttendeeWidget extends StatelessWidget {
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                constraints: BoxConstraints(maxWidth: 400, maxHeight: 400),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header
-                    Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              attendee.name,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.close),
-                            onPressed: () => Navigator.pop(dialogContext),
-                            style: IconButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Profile Image
-                    ClipRRect(
-                      borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-                      child: CachedNetworkImage(
-                        imageUrl: attendee.avatar,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          height: 300,
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          height: 300,
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          child: Icon(Icons.person, size: 80),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(200),
+            child: CachedNetworkImage(
+              imageUrl: attendee.avatar,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                height: 500,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Center(child: CircularProgressIndicator()),
               ),
-            ],
+              errorWidget: (context, url, error) => Container(
+                height: 500,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Icon(Icons.person, size: 80),
+              ),
+            ),
           ),
         );
       },
@@ -454,33 +400,16 @@ class AttendeeWidget extends StatelessWidget {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          title: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  CupertinoIcons.exclamationmark_triangle_fill,
-                  color: Theme.of(context).colorScheme.error,
-                  size: 24,
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Remove Attendee?',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
+          title: Text(
+            'Remove Attendee?',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           content: Text(
             'Are you sure you want to remove ${attendee.name} from this meet? This action cannot be undone.',
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               height: 1.5,
             ),
@@ -499,28 +428,22 @@ class AttendeeWidget extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(
+            DefaultButton(
+              height: 42,
+              width: 90,
               onPressed: () {
                 context.read<MeetBloc>().add(KickUserEvent(userId: attendee.id));
                 Navigator.pop(dialogContext);
                 _showSnackBar(context, '${attendee.name} removed', Icons.check_circle);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              text:'Remove',
+              backgroundColor: Theme.of(context).colorScheme.error,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 15
               ),
-              child: Text(
-                'Remove',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                ),
-              ),
+              radius: 12,
             ),
           ],
         );
