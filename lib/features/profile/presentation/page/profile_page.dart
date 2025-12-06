@@ -125,7 +125,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                 ),
                 if ((user?.bio ?? '').isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 2),
                   Text(
                     user!.bio!,
                     maxLines: 2,
